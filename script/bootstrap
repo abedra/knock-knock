@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+NGINX_VERSION=nginx-1.2.6
+
+if [ ! -d "build" ]; then
+    mkdir build
+    pushd build
+
+    curl -O http://nginx.org/download/$NGINX_VERSION.tar.gz
+    tar xvzf $NGINX_VERSION.tar.gz
+    popd
+fi
+
+pushd build/$NGINX_VERSION
+CFLAGS="-g -O0" ./configure --with-debug --with-cc-opt='-I/usr/local/include' --with-ld-opt='-L/usr/local/lib' --prefix=`pwd`/../nginx --conf-path=conf/nginx.conf --error-log-path=logs/error.log --http-log-path=logs/access.log
+
+make
+make install
+popd
+
+ln -sf `pwd`/nginx.conf `pwd`/build/nginx/conf/nginx.conf
