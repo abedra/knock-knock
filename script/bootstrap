@@ -14,10 +14,22 @@ if [ ! -d "build" ]; then
 fi
 
 pushd build/$NGINX_VERSION
-CFLAGS="-g -O0" ./configure --with-debug --with-cc-opt='-I/usr/local/include' --with-ld-opt='-L/usr/local/lib' --prefix=`pwd`/../nginx --conf-path=conf/nginx.conf --error-log-path=logs/error.log --http-log-path=logs/access.log
+CFLAGS="-g -O0" ./configure --with-debug --with-cc-opt='-I/usr/local/include' --with-ld-opt='-L/usr/local/lib' --prefix=`pwd`/../nginx --conf-path=conf/nginx.conf --error-log-path=logs/error.log --http-log-path=logs/access.log --with-http_geoip_module
 
 make
 make install
 popd
 
+if [ ! -d "etc" ]; then
+    mkdir etc
+    pushd etc
+    wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+    wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+    gunzip GeoIP.dat.gz
+    gunzip GeoLiteCity.dat.gz
+    popd
+fi
+
 ln -sf `pwd`/nginx.conf `pwd`/build/nginx/conf/nginx.conf
+ln -sf `pwd`/proxy.conf `pwd`/build/nginx/conf/proxy.conf
+ln -sf `pwd`/etc `pwd`/build/nginx/etc
