@@ -30,6 +30,5 @@ if [ ! -d "etc" ]; then
     popd
 fi
 
-ln -sf `pwd`/nginx.conf `pwd`/build/nginx/conf/nginx.conf
 ln -sf `pwd`/proxy.conf `pwd`/build/nginx/conf/proxy.conf
 ln -sf `pwd`/etc `pwd`/build/nginx/etc
