@@ -2,6 +2,20 @@
 
 set -e
 
+if [ ! -d "ModSecurity" ]; then
+    git clone git://github.com/SpiderLabs/ModSecurity
+    pushd ModSecurity
+    git co remotes/trunk
+    ./autogen.sh
+    ./configure --enable-standalone-module
+    make
+    popd
+fi
+
+if [ ! -d "owasp-modsecurity-crs" ]; then
+    git clone git://github.com/SpiderLabs/owasp-modsecurity-crs etc/modsecurity_crs
+fi
+
 NGINX_VERSION=nginx-1.2.6
 
 if [ ! -d "build" ]; then
@@ -14,7 +28,7 @@ if [ ! -d "build" ]; then
 fi
 
 pushd build/$NGINX_VERSION
-CFLAGS="-g -O0" ./configure --with-debug --with-cc-opt='-I/usr/local/include' --with-ld-opt='-L/usr/local/lib' --prefix=`pwd`/../nginx --conf-path=conf/nginx.conf --error-log-path=logs/error.log --http-log-path=logs/access.log --with-http_geoip_module
+CFLAGS="-g -O0" ./configure --with-debug --with-cc-opt='-I/usr/local/include' --with-ld-opt='-L/usr/local/lib' --prefix=`pwd`/../nginx --conf-path=conf/nginx.conf --error-log-path=logs/error.log --http-log-path=logs/access.log --with-http_geoip_module --add-module=../../ModSecurity/nginx/modsecurity
 
 make
 make install
@@ -30,5 +44,6 @@ if [ ! -d "etc" ]; then
     popd
 fi
 
-ln -sf `pwd`/proxy.conf `pwd`/build/nginx/conf/proxy.conf
+ln -sf `pwd`/nginx.conf `pwd`/build/nginx/conf/nginx.conf
+ln -sf `pwd`/modsecurity.conf `pwd`/build/nginx/conf/modsecurity.conf
 ln -sf `pwd`/etc `pwd`/build/nginx/etc
