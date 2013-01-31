@@ -12,7 +12,7 @@ if [ ! -d "ModSecurity" ]; then
     popd
 fi
 
-if [ ! -d "owasp-modsecurity-crs" ]; then
+if [ ! -d "etc/modsecurity_crs" ]; then
     git clone git://github.com/SpiderLabs/owasp-modsecurity-crs etc/modsecurity_crs
 fi
 
